@@ -62,8 +62,9 @@ DESCRIPTION FILTER-FUNCTION)`. You can add additional buffer filters
 like so:
 
 ``` emacs-lisp
-(push '("5" "special" frog-jump-buffer-filter-special-buffers)
-      frog-jump-buffer-filter-actions)
+(add-to-list
+ 'frog-jump-buffer-filter-actions
+ '("5" "special" frog-jump-buffer-filter-special-buffers) t)
 ```
 Each filter function receives a buffer as an argument and should
 return a non-nil value if that buffer should be displayed in `frog-menu-buffer`.

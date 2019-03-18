@@ -46,6 +46,11 @@
 (require 'frog-menu)
 (require 'projectile)
 
+(defgroup frog-jump-buffer nil
+  "Fast buffer switching interface."
+  :group 'convenience
+  :prefix "frog-jump-buffer-")
+
 (defcustom frog-jump-buffer-ignore-buffers '("\\` ")
   "This is a list of regexps of buffer names to ignore or buffer-matching filter functions to use."
   :type '(repeat (choice regexp function)))
