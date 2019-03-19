@@ -73,6 +73,15 @@
 Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
   :type 'list)
 
+(defun frog-jump-buffer-get-current-filter-name ()
+  (condition-case err
+      (nth 1 (car (-filter
+                   (lambda (list)
+                     (equal (symbol-name (car (last list)))
+                            (symbol-name frog-jump-buffer-current-filter-function)))
+                   frog-jump-buffer-filter-actions)))
+    (error "[all]")))
+
 (defun frog-jump-buffer-filter-same-project (buffer)
   "Check if a buffer is the same project."
   (let ((project-root (projectile-project-root)))
@@ -152,9 +161,13 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
 
 (defun frog-jump-buffer-prompt ()
   "This is the `frog-menu' prompt for `frog-menu-buffer'."
-  (format "Filter: [%s] Target Window: [%s]"
-          (or frog-jump-buffer-current-filter-function "all")
+  (format "Filter: %s Target Window: [%s]"
+          (frog-jump-buffer-get-current-filter-name)
           (if frog-jump-buffer-target-other-window "other" "same")))
+
+(defun frog-jump-buffer-current-ignore-buffers ()
+  "Return all the filters and regex rejections."
+  (-non-nil (append frog-jump-buffer-ignore-buffers (list frog-jump-buffer-current-filter-function))))
 
 ;;;###autoload
 (defun frog-jump-buffer ()
@@ -162,8 +175,7 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
 If FILTER-FUNCTION is present, filter the buffer-list with it."
   (interactive)
   (frog-jump-buffer-with-settings
-   (let* ((frog-jump-buffer-current-ignore-buffers
-           (-non-nil (append frog-jump-buffer-ignore-buffers (list frog-jump-buffer-current-filter-function))))
+   (let* ((frog-jump-buffer-current-ignore-buffers (frog-jump-buffer-current-ignore-buffers))
           (buffer-names (frog-jump-buffer-buffer-names))
           (actions (frog-jump-buffer-actions))
           (prompt (frog-jump-buffer-prompt))
