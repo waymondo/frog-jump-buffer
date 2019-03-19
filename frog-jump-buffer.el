@@ -60,10 +60,10 @@
   :type 'number)
 
 (defcustom frog-jump-buffer-filter-actions
-  '(("1" "same project" frog-jump-buffer-filter-same-project)
-    ("2" "same mode" frog-jump-buffer-filter-same-mode)
-    ("3" "files" frog-jump-buffer-filter-file-buffers)
-    ("4" "all" frog-jump-buffer-filter-all))
+  '(("1" "[project]" frog-jump-buffer-filter-same-project)
+    ("2" "[mode]" frog-jump-buffer-filter-same-mode)
+    ("3" "[files]" frog-jump-buffer-filter-file-buffers)
+    ("4" "[all]" frog-jump-buffer-filter-all))
   "These are the built-in buffer filter actions available during `frog-jump-buffer'.
 Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
   :type 'list)
@@ -121,8 +121,8 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
   "Determine the list of actions to show in `frog-jump-buffer'’s `frog-menu'."
   (let ((target-window-option
          (if frog-jump-buffer-target-other-window
-             '(("0" "same window" frog-jump-buffer-same-window))
-           '(("0" "other window" frog-jump-buffer-other-window)))))
+             '(("0" "[same]" frog-jump-buffer-same-window))
+           '(("0" "[other]" frog-jump-buffer-other-window)))))
     (append frog-jump-buffer-filter-actions target-window-option)))
 
 (defun frog-jump-buffer-handle-result (filter-function res)

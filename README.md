@@ -64,7 +64,7 @@ like so:
 ``` emacs-lisp
 (add-to-list
  'frog-jump-buffer-filter-actions
- '("5" "special" frog-jump-buffer-filter-special-buffers) t)
+ '("5" "[special]" frog-jump-buffer-filter-special-buffers) t)
 ```
 Each filter function receives a buffer as an argument and should
 return a non-nil value if that buffer should be displayed in `frog-menu-buffer`.
