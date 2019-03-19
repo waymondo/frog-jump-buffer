@@ -10,6 +10,8 @@ powered by [`avy`](https://github.com/abo-abo/avy) via
 `ace-jump-buffer`, it allows you to hop to any Emacs buffer in 2-3 key
 strokes.
 
+![example](example.gif)
+
 ### Installation
 
 This project isn’t in any recipe repositories yet, so you’ll need to
@@ -31,7 +33,7 @@ Use `0` to toggle between opening in the same window or
 
 The numbers `1` through `4` will cycle through the default buffer filters.
 
-![example](example.gif)
+---
 
 If you would like to call a function that uses a specific filter
 function by default, you can do so by defining a function like this:
@@ -74,6 +76,10 @@ DESCRIPTION FILTER-FUNCTION)`. You can add additional buffer filters
 like so:
 
 ``` emacs-lisp
+(defun frog-jump-buffer-filter-special-buffers (buffer)
+  (with-current-buffer buffer
+    (-any? #'derived-mode-p '(comint-mode magit-mode inf-ruby-mode rg-mode compilation-mode))))
+
 (add-to-list
  'frog-jump-buffer-filter-actions
  '("5" "[special]" frog-jump-buffer-filter-special-buffers) t)
