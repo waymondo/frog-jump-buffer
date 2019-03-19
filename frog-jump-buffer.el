@@ -65,10 +65,10 @@
   :type 'symbol)
 
 (defcustom frog-jump-buffer-filter-actions
-  '(("1" "[project]" frog-jump-buffer-filter-same-project)
-    ("2" "[mode]" frog-jump-buffer-filter-same-mode)
-    ("3" "[files]" frog-jump-buffer-filter-file-buffers)
-    ("4" "[all]" frog-jump-buffer-filter-all))
+  '(("1" "[all]" frog-jump-buffer-filter-all)
+    ("2" "[project]" frog-jump-buffer-filter-same-project)
+    ("3" "[mode]" frog-jump-buffer-filter-same-mode)
+    ("4" "[files]" frog-jump-buffer-filter-file-buffers))
   "These are the built-in buffer filter actions available during `frog-jump-buffer'.
 Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
   :type 'list)
@@ -117,12 +117,6 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
       frog-jump-buffer-current-ignore-buffers))
    buffers))
 
-(defmacro frog-jump-buffer-with-settings (&rest body)
-  "Wrap `frog-jump-buffer' with `frog-menu' overrides."
-  `(let* ((frog-menu-avy-padding t)
-          (frog-menu-grid-column-function (lambda () 1)))
-     ,@body))
-
 (defun frog-jump-buffer-buffer-names ()
   "Filter and limit the number of buffers to show."
   (-take frog-jump-buffer-max-buffers
@@ -134,12 +128,15 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
 (defvar frog-jump-buffer-current-filter-function frog-jump-buffer-default-filter
   "This is a placeholder variable for determining which function to filter buffers by.")
 
+(defun frog-jump-buffer-target-window-action ()
+  "Return the `frog-menu' action for which window to target."
+  (if frog-jump-buffer-target-other-window
+      '(("0" "[same]" frog-jump-buffer-same-window))
+    '(("0" "[other]" frog-jump-buffer-other-window))))
+
 (defun frog-jump-buffer-actions ()
   "Determine the list of actions to show in `frog-jump-buffer'’s `frog-menu'."
-  (let ((target-window-option
-         (if frog-jump-buffer-target-other-window
-             '(("0" "[same]" frog-jump-buffer-same-window))
-           '(("0" "[other]" frog-jump-buffer-other-window)))))
+  (let ((target-window-option (frog-jump-buffer-target-window-action)))
     (append frog-jump-buffer-filter-actions target-window-option)))
 
 (defun frog-jump-buffer-handle-result (res)
@@ -161,9 +158,9 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
 
 (defun frog-jump-buffer-prompt ()
   "This is the `frog-menu' prompt for `frog-menu-buffer'."
-  (format "Filter: %s Target Window: [%s]"
-          (frog-jump-buffer-get-current-filter-name)
-          (if frog-jump-buffer-target-other-window "other" "same")))
+  (let ((filter-name (frog-jump-buffer-get-current-filter-name))
+        (window-target (if frog-jump-buffer-target-other-window "[other]" "[same]")))
+    (format "Showing Buffers: %s\nTarget Window: %s\n" filter-name window-target)))
 
 (defun frog-jump-buffer-current-ignore-buffers ()
   "Return all the filters and regex rejections."
@@ -174,15 +171,16 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
   "Present a `frog-menu' for jumping to an open buffer.
 If FILTER-FUNCTION is present, filter the buffer-list with it."
   (interactive)
-  (frog-jump-buffer-with-settings
-   (let* ((frog-jump-buffer-current-ignore-buffers (frog-jump-buffer-current-ignore-buffers))
-          (buffer-names (frog-jump-buffer-buffer-names))
-          (actions (frog-jump-buffer-actions))
-          (prompt (frog-jump-buffer-prompt))
-          (res (frog-menu-read prompt buffer-names actions)))
-     (unless res
-       (error "Quit"))
-     (frog-jump-buffer-handle-result res))))
+  (let* ((frog-menu-avy-padding t)
+         (frog-menu-grid-column-function (lambda () 1))
+         (frog-jump-buffer-current-ignore-buffers (frog-jump-buffer-current-ignore-buffers))
+         (buffer-names (frog-jump-buffer-buffer-names))
+         (actions (frog-jump-buffer-actions))
+         (prompt (frog-jump-buffer-prompt))
+         (res (frog-menu-read prompt buffer-names actions)))
+    (unless res
+      (error "Quit"))
+    (frog-jump-buffer-handle-result res)))
 
 (provide 'frog-jump-buffer)
 ;;; frog-jump-buffer.el ends here

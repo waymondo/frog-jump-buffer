@@ -83,9 +83,9 @@ return a non-nil value if that buffer should be displayed in `frog-menu-buffer`.
 
 The built-in filter functions, bound to `1`, `2`, `3`, `4` are:
 
+*  `frog-jump-buffer-filter-all`
 *  `frog-jump-buffer-filter-same-project`
 *  `frog-jump-buffer-filter-same-mode`
 *  `frog-jump-buffer-filter-file-buffers`
-*  `frog-jump-buffer-filter-all`
 
 See `frog-menu-buffer.el` for more details.
