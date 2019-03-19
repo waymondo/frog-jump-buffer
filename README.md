@@ -33,16 +33,24 @@ The numbers `1` through `4` will cycle through the default buffer filters.
 
 ![example](example.gif)
 
-Alternately, there is `(frog-jump-buffer-other-window)` if you would
-like to be able `frog-jump-buffer` into `(other-window)` by default.
-
 If you would like to call a function that uses a specific filter
-function by default, you can do so like this:
+function by default, you can do so by defining a function like this:
 
 ``` emacs-lisp
 (defun frog-jump-buffer-same-project ()
   (interactive)
-  (frog-jump-buffer frog-jump-buffer-filter-same-project))
+  (let ((frog-jump-buffer-current-filter-function #'frog-jump-buffer-filter-same-project))
+    (frog-jump-buffer)))
+```
+
+Likewise, to define a jump function that defaults to opening in
+`(other-window)`,  you can do this:
+
+``` emacs-lisp
+(defun frog-jump-buffer-same-project ()
+  (interactive)
+  (let ((frog-jump-buffer-target-other-window t))
+    (frog-jump-buffer)))
 ```
 
 ### Variables
@@ -54,6 +62,10 @@ filter functions to use.
 #### `frog-jump-buffer-max-buffers`
 This is the maximum number of buffers to show in the `frog-menu`.  The
 default is 12.
+
+#### `frog-jump-buffer-default-filter`
+This is the default filter to use when invoking
+`frog-jump-buffer`. Shows all buffers by default.
 
 #### `frog-jump-buffer-filter-actions`
 These are the built-in buffer filter actions available during

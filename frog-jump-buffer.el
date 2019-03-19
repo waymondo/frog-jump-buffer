@@ -59,6 +59,11 @@
   "This is the maximum number of buffers to show in the `frog-menu'."
   :type 'number)
 
+(defcustom frog-jump-buffer-default-filter 'frog-jump-buffer-filter-all
+  "This is the default filter to use when invoking
+`frog-jump-buffer'. Shows all buffers by default."
+  :type 'symbol)
+
 (defcustom frog-jump-buffer-filter-actions
   '(("1" "[project]" frog-jump-buffer-filter-same-project)
     ("2" "[mode]" frog-jump-buffer-filter-same-mode)
@@ -117,6 +122,9 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
 (defvar frog-jump-buffer-target-other-window nil
   "This is a placeholder variable for determining which window to open the chosen buffer in.")
 
+(defvar frog-jump-buffer-current-filter-function frog-jump-buffer-default-filter
+  "This is a placeholder variable for determining which function to filter buffers by.")
+
 (defun frog-jump-buffer-actions ()
   "Determine the list of actions to show in `frog-jump-buffer'’s `frog-menu'."
   (let ((target-window-option
@@ -125,45 +133,44 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
            '(("0" "[other]" frog-jump-buffer-other-window)))))
     (append frog-jump-buffer-filter-actions target-window-option)))
 
-(defun frog-jump-buffer-handle-result (filter-function res)
+(defun frog-jump-buffer-handle-result (res)
   "Handle the result of `frog-menu-read' for `frog-jump-buffer'."
   (cond
    ((stringp res)
     (if frog-jump-buffer-target-other-window
         (switch-to-buffer-other-window res)
       (switch-to-buffer res)))
-   ((or (eq res 'frog-jump-buffer-other-window)
-        (eq res 'frog-jump-buffer-same-window))
-    (funcall res filter-function))
+   ((eq res 'frog-jump-buffer-other-window)
+    (let ((frog-jump-buffer-target-other-window t))
+      (frog-jump-buffer)))
+   ((eq res 'frog-jump-buffer-same-window)
+    (let ((frog-jump-buffer-target-other-window nil))
+      (frog-jump-buffer)))
    (t
-    (frog-jump-buffer res))))
+    (let ((frog-jump-buffer-current-filter-function res))
+      (frog-jump-buffer)))))
+
+(defun frog-jump-buffer-prompt ()
+  "This is the `frog-menu' prompt for `frog-menu-buffer'."
+  (format "Filter: [%s] Target Window: [%s]"
+          (or frog-jump-buffer-current-filter-function "all")
+          (if frog-jump-buffer-target-other-window "other" "same")))
 
 ;;;###autoload
-(defun frog-jump-buffer (&optional filter-function)
+(defun frog-jump-buffer ()
   "Present a `frog-menu' for jumping to an open buffer.
 If FILTER-FUNCTION is present, filter the buffer-list with it."
   (interactive)
   (frog-jump-buffer-with-settings
    (let* ((frog-jump-buffer-current-ignore-buffers
-           (-non-nil (append frog-jump-buffer-ignore-buffers (list filter-function))))
+           (-non-nil (append frog-jump-buffer-ignore-buffers (list frog-jump-buffer-current-filter-function))))
           (buffer-names (frog-jump-buffer-buffer-names))
           (actions (frog-jump-buffer-actions))
-          (res (frog-menu-read "" buffer-names actions)))
+          (prompt (frog-jump-buffer-prompt))
+          (res (frog-menu-read prompt buffer-names actions)))
      (unless res
        (error "Quit"))
-     (frog-jump-buffer-handle-result filter-function res))))
-
-;;;###autoload
-(defun frog-jump-buffer-other-window (&optional filter-function)
-  "Run `frog-jump-buffer' with the intention of opening the selected buffer in `other-window'."
-  (let ((frog-jump-buffer-target-other-window t))
-    (frog-jump-buffer filter-function)))
-
-;;;###autoload
-(defun frog-jump-buffer-same-window (&optional filter-function)
-  "Run `frog-jump-buffer' with the intention of opening the selected buffer in the current window."
-  (let ((frog-jump-buffer-target-other-window nil))
-    (frog-jump-buffer filter-function)))
+     (frog-jump-buffer-handle-result res))))
 
 (provide 'frog-jump-buffer)
 ;;; frog-jump-buffer.el ends here
