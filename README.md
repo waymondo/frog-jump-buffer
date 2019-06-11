@@ -14,8 +14,8 @@ strokes.
 
 ### Installation
 
-This project isn’t in any recipe repositories yet, so you’ll need to
-install it manually or directly from Github for now.
+MELPA submission is in progress. Until then this project isn’t in any recipe repositories yet, so
+you’ll need to install it manually or directly from Github for now.
 
 ### Usage
 
