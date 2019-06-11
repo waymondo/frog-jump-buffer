@@ -26,9 +26,9 @@
 
 ;; `frog-jump-buffer' allows you to hop to any Emacs buffer in 2-3 key strokes.
 
-;; `(frog-jump-buffer)' is the main entry-point. Bind it to your preferred key-binding.
+;; `(frog-jump-buffer)' is the main entry-point.  Bind it to your preferred key-binding.
 
-;; It opens the `frog-menu' buffer selector. The buffers appear in order
+;; It opens the `frog-menu' buffer selector.  The buffers appear in order
 ;; of most recent display or selection.
 
 ;; Selecting the `avy' character next to a buffer switches to that
@@ -60,8 +60,8 @@
   :type 'number)
 
 (defcustom frog-jump-buffer-default-filter 'frog-jump-buffer-filter-all
-  "This is the default filter to use when invoking
-`frog-jump-buffer'. Shows all buffers by default."
+  "This is the default filter to use when invoking `frog-jump-buffer'.
+Shows all buffers by default."
   :type 'symbol)
 
 (defcustom frog-jump-buffer-filter-actions
@@ -69,12 +69,13 @@
     ("2" "[project]" frog-jump-buffer-filter-same-project)
     ("3" "[mode]" frog-jump-buffer-filter-same-mode)
     ("4" "[files]" frog-jump-buffer-filter-file-buffers))
-  "These are the built-in buffer filter actions available during `frog-jump-buffer'.
+  "The built-in buffer filter actions available during `frog-jump-buffer'.
 Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
   :type 'list)
 
 (defun frog-jump-buffer-get-current-filter-name ()
-  (condition-case err
+  "Get the current filter’s name."
+  (condition-case _err
       (nth 1 (car (-filter
                    (lambda (list)
                      (equal (symbol-name (car (last list)))
@@ -83,19 +84,19 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
     (error "[all]")))
 
 (defun frog-jump-buffer-filter-same-project (buffer)
-  "Check if a buffer is the same project."
+  "Check if a BUFFER is the same project."
   (let ((project-root (projectile-project-root)))
     (with-current-buffer buffer
       (projectile-project-buffer-p buffer project-root))))
 
 (defun frog-jump-buffer-filter-same-mode (buffer)
-  "Check if a buffer is the same as the current major mode."
+  "Check if a BUFFER is the same as the current major mode."
   (let ((current-mode major-mode))
     (with-current-buffer buffer
       (eq major-mode current-mode))))
 
 (defun frog-jump-buffer-filter-file-buffers (buffer)
-  "Check if a buffer is backed by a real file."
+  "Check if a BUFFER is backed by a real file."
   (buffer-file-name buffer))
 
 (defun frog-jump-buffer-filter-all (_buffer)
@@ -106,7 +107,7 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
   "This is a placeholder variable for the currently active ignore buffer filters.")
 
 (defun frog-jump-buffer-match (buffers)
-  "Process the `frog-jump-buffer-current-ignore-buffers' filters for all buffers."
+  "Process the variable `frog-jump-buffer-current-ignore-buffers' filters for all BUFFERS."
   (cl-remove-if
    (lambda (buf)
      (cl-find-if
@@ -140,7 +141,7 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
     (append frog-jump-buffer-filter-actions target-window-option)))
 
 (defun frog-jump-buffer-handle-result (res)
-  "Handle the result of `frog-menu-read' for `frog-jump-buffer'."
+  "Handle the result (RES) of `frog-menu-read' for `frog-jump-buffer'."
   (cond
    ((stringp res)
     (if frog-jump-buffer-target-other-window
@@ -169,7 +170,7 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
 ;;;###autoload
 (defun frog-jump-buffer ()
   "Present a `frog-menu' for jumping to an open buffer.
-If FILTER-FUNCTION is present, filter the buffer-list with it."
+If FILTER-FUNCTION is present, filter the `buffer-list' with it."
   (interactive)
   (let* ((frog-menu-avy-padding t)
          (frog-menu-grid-column-function (lambda () 1))
