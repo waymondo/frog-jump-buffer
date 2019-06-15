@@ -183,5 +183,12 @@ If FILTER-FUNCTION is present, filter the `buffer-list' with it."
       (error "Quit"))
     (frog-jump-buffer-handle-result res)))
 
+;;;###autoload
+(defun frog-jump-buffer-other-window ()
+  "Launch `frog-jump-buffer' with `other-window' being the default target window."
+  (interactive)
+  (let ((frog-jump-buffer-target-other-window t))
+    (frog-jump-buffer)))
+
 (provide 'frog-jump-buffer)
 ;;; frog-jump-buffer.el ends here
