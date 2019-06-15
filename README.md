@@ -49,7 +49,7 @@ Likewise, to define a jump function that defaults to opening in
 `(other-window)`,  you can do this:
 
 ``` emacs-lisp
-(defun frog-jump-buffer-same-project ()
+(defun frog-jump-buffer-other-window ()
   (interactive)
   (let ((frog-jump-buffer-target-other-window t))
     (frog-jump-buffer)))
