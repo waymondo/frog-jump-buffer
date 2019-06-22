@@ -73,6 +73,9 @@ Shows all buffers by default."
 Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
   :type 'list)
 
+(defvar frog-jump-buffer-current-filter-function frog-jump-buffer-default-filter
+  "This is a placeholder variable for determining which function to filter buffers by.")
+
 (defun frog-jump-buffer-get-current-filter-name ()
   "Get the current filter’s name."
   (condition-case _err
@@ -125,9 +128,6 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
 
 (defvar frog-jump-buffer-target-other-window nil
   "This is a placeholder variable for determining which window to open the chosen buffer in.")
-
-(defvar frog-jump-buffer-current-filter-function frog-jump-buffer-default-filter
-  "This is a placeholder variable for determining which function to filter buffers by.")
 
 (defun frog-jump-buffer-target-window-action ()
   "Return the `frog-menu' action for which window to target."
