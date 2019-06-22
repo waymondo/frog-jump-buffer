@@ -89,8 +89,9 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
 (defun frog-jump-buffer-filter-same-project (buffer)
   "Check if a BUFFER is the same project."
   (let ((project-root (projectile-project-root)))
-    (with-current-buffer buffer
-      (projectile-project-buffer-p buffer project-root))))
+    (when project-root
+      (with-current-buffer buffer
+        (projectile-project-buffer-p buffer project-root)))))
 
 (defun frog-jump-buffer-filter-same-mode (buffer)
   "Check if a BUFFER is the same as the current major mode."
