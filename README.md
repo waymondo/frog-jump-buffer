@@ -14,8 +14,11 @@ strokes.
 
 ### Installation
 
-MELPA submission is in progress. Until then this project isn’t in any recipe repositories yet, so
-you’ll need to install it manually or directly from Github for now.
+You can install it from [MELPA](http://melpa.org/) with `M-x package-install` or here’s a basic `use-package` declaration:
+
+``` emacs-lisp
+(use-package frog-jump-buffer :ensure t)
+```
 
 ### Usage
 
