@@ -64,6 +64,10 @@
 Shows all buffers by default."
   :type 'symbol)
 
+(defcustom frog-jump-buffer-include-current-buffer t
+  "Set to `nil' to remove the current buffer from always being the first option."
+  :type 'boolean)
+
 (defcustom frog-jump-buffer-filter-actions
   '(("1" "[all]" frog-jump-buffer-filter-all)
     ("2" "[mode]" frog-jump-buffer-filter-same-mode)
@@ -126,10 +130,14 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
       frog-jump-buffer-current-ignore-buffers))
    buffers))
 
+(defun frog-jump-buffer-list ()
+  "Return the buffer list to apply the filters to."
+  (buffer-list))
+
 (defun frog-jump-buffer-buffer-names ()
   "Filter and limit the number of buffers to show."
   (-take frog-jump-buffer-max-buffers
-         (frog-jump-buffer-match (mapcar #'buffer-name (buffer-list)))))
+         (frog-jump-buffer-match (mapcar #'buffer-name (frog-jump-buffer-list)))))
 
 (defvar frog-jump-buffer-target-other-window nil
   "This is a placeholder variable for determining which window to open the chosen buffer in.")
@@ -170,7 +178,11 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
 
 (defun frog-jump-buffer-current-ignore-buffers ()
   "Return all the filters and regex rejections."
-  (-non-nil (append frog-jump-buffer-ignore-buffers (list frog-jump-buffer-current-filter-function))))
+  (-non-nil
+   (append frog-jump-buffer-ignore-buffers
+           (list frog-jump-buffer-current-filter-function)
+           (unless frog-jump-buffer-include-current-buffer
+             (list (buffer-name (current-buffer)))))))
 
 ;;;###autoload
 (defun frog-jump-buffer ()
