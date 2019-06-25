@@ -68,6 +68,16 @@ default is 12.
 This is the default filter to use when invoking
 `frog-jump-buffer`. Shows all buffers by default.
 
+#### `frog-jump-buffer-include-current-buffer`
+Set to `nil` to remove the current buffer from always being the first option.
+
+#### `frog-jump-buffer-posframe-parameters`
+Explicit frame parameters to be used by the posframe `frog-jump-buffer` creates.
+
+#### `frog-jump-buffer-posframe-handler`
+The posframe handler that `frog-jump-buffer' should use. Defaults to the point being the bottom left
+point of the posframe.
+
 #### `frog-jump-buffer-filter-actions`
 These are the built-in buffer filter actions available during
 `frog-jump-buffer`.  Each action is a list of the form `(KEY

@@ -68,6 +68,14 @@ Shows all buffers by default."
   "Set to `nil' to remove the current buffer from always being the first option."
   :type 'boolean)
 
+(defcustom frog-jump-buffer-posframe-parameters frog-menu-posframe-parameters
+  "Explicit frame parameters to be used by the posframe `frog-jump-buffer' creates."
+  :type 'list)
+
+(defcustom frog-jump-buffer-posframe-handler 'posframe-poshandler-point-bottom-left-corner
+  "This is the posframe handler that `frog-jump-buffer' should use."
+  :type 'function)
+
 (defcustom frog-jump-buffer-filter-actions
   '(("1" "[all]" frog-jump-buffer-filter-all)
     ("2" "[mode]" frog-jump-buffer-filter-same-mode)
@@ -191,6 +199,8 @@ If FILTER-FUNCTION is present, filter the `buffer-list' with it."
   (interactive)
   (let* ((frog-menu-avy-padding t)
          (frog-menu-grid-column-function (lambda () 1))
+         (frog-menu-posframe-parameters frog-jump-buffer-posframe-parameters)
+         (frog-menu-display-option-alist `((avy-posframe . ,frog-jump-buffer-posframe-handler)))
          (frog-jump-buffer-current-ignore-buffers (frog-jump-buffer-current-ignore-buffers))
          (buffer-names (frog-jump-buffer-buffer-names))
          (actions (frog-jump-buffer-actions))
