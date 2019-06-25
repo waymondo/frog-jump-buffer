@@ -4,8 +4,8 @@
 
 ;; Author: Justin Talbott
 ;; URL: https://github.com/waymondo/frog-jump-buffer
-;; Version: 0.1.0
-;; Package-Requires: ((emacs "24") (avy "0.4.0") (dash "2.4.0") (frog-menu "0.2.8") (projectile "2.0.0"))
+;; Version: 0.1.1
+;; Package-Requires: ((emacs "24") (avy "0.4.0") (dash "2.4.0") (frog-menu "0.2.8"))
 ;; License: GNU General Public License version 3, or (at your option) any later version
 ;; Keywords: convenience, tools
 
@@ -44,7 +44,7 @@
 (require 'avy)
 (require 'dash)
 (require 'frog-menu)
-(require 'projectile)
+(require 'projectile nil t)
 
 (defgroup frog-jump-buffer nil
   "Fast buffer switching interface."
@@ -66,12 +66,16 @@ Shows all buffers by default."
 
 (defcustom frog-jump-buffer-filter-actions
   '(("1" "[all]" frog-jump-buffer-filter-all)
-    ("2" "[project]" frog-jump-buffer-filter-same-project)
-    ("3" "[mode]" frog-jump-buffer-filter-same-mode)
-    ("4" "[files]" frog-jump-buffer-filter-file-buffers))
+    ("2" "[mode]" frog-jump-buffer-filter-same-mode)
+    ("3" "[files]" frog-jump-buffer-filter-file-buffers))
   "The built-in buffer filter actions available during `frog-jump-buffer'.
 Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
   :type 'list)
+
+(when (boundp 'projectile)
+  (add-to-list
+   'frog-jump-buffer-filter-actions
+   '("4" "[project]" frog-jump-buffer-filter-same-project) t))
 
 (defvar frog-jump-buffer-current-filter-function frog-jump-buffer-default-filter
   "This is a placeholder variable for determining which function to filter buffers by.")

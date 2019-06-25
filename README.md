@@ -34,7 +34,13 @@ buffer.
 Use `0` to toggle between opening in the same window or
 `(other-window)`.
 
-The numbers `1` through `4` will cycle through the default buffer filters.
+The numbers `1` through `4` will cycle through the default buffer filters:
+
+- `1`: show all buffers in the `(buffer-list)`
+- `2`: filter buffers to the same mode as `current-buffer`
+- `3`: filter buffers to only buffers represented by files
+- `4`: filter buffers to the same project as `current-buffer` (requires
+  [`projectiile`](https://github.com/bbatsov/projectile) to be installed)
 
 ---
 
