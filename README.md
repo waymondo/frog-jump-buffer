@@ -75,7 +75,7 @@ Set to `nil` to remove the current buffer from always being the first option.
 Explicit frame parameters to be used by the posframe `frog-jump-buffer` creates.
 
 #### `frog-jump-buffer-posframe-handler`
-The posframe handler that `frog-jump-buffer' should use. Defaults to the point being the bottom left
+The posframe handler that `frog-jump-buffer` should use. Defaults to `(point)` being the bottom left
 point of the posframe.
 
 #### `frog-jump-buffer-filter-actions`
