@@ -4,7 +4,7 @@
 
 ;; Author: Justin Talbott
 ;; URL: https://github.com/waymondo/frog-jump-buffer
-;; Version: 0.1.1
+;; Version: 0.1.2
 ;; Package-Requires: ((emacs "24") (avy "0.4.0") (dash "2.4.0") (frog-menu "0.2.8"))
 ;; License: GNU General Public License version 3, or (at your option) any later version
 ;; Keywords: convenience, tools
@@ -37,7 +37,7 @@
 ;; Use `0' to toggle between opening in the same window or
 ;; `(other-window)'.
 
-;; The numbers 1 through 4 will cycle through the default buffer filters.
+;; The numbers 1 through 5 will cycle through the default buffer filters.
 
 ;;; Code:
 
@@ -78,7 +78,8 @@ Shows all buffers by default."
 (defcustom frog-jump-buffer-filter-actions
   '(("1" "[all]" frog-jump-buffer-filter-all)
     ("2" "[mode]" frog-jump-buffer-filter-same-mode)
-    ("3" "[files]" frog-jump-buffer-filter-file-buffers))
+    ("3" "[files]" frog-jump-buffer-filter-file-buffers)
+    ("4" "[recentf]" frog-jump-buffer-filter-recentf))
   "The built-in buffer filter actions available during `frog-jump-buffer'.
 Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
   :type 'list)
@@ -86,7 +87,7 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
 (when (require 'projectile nil t)
   (add-to-list
    'frog-jump-buffer-filter-actions
-   '("4" "[project]" frog-jump-buffer-filter-same-project) t))
+   '("5" "[project]" frog-jump-buffer-filter-same-project) t))
 
 (defvar frog-jump-buffer-current-filter-function frog-jump-buffer-default-filter
   "This is a placeholder variable for determining which function to filter buffers by.")
@@ -122,6 +123,32 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
   "Return all possible buffers."
   t)
 
+(defvar frog-jump-buffer-include-virtual-buffers nil
+  "This is a placeholder variable using `recentf' instead of `buffer-list'.")
+
+(defun frog-jump-buffer-filter-recentf (_buffer)
+  "Return all buffers from `recentf'."
+  t)
+
+(defun frog-jump-buffer-recentf-buffers ()
+  "Adapted from `ivy--virtual-buffers'."
+  (unless recentf-mode
+    (recentf-mode 1))
+  (let (buffers)
+    (dolist (head recentf-list)
+      (let* ((file-name (if (stringp head) head (cdr head)))
+             (name (file-name-nondirectory file-name)))
+        (when (equal name "")
+          (setq name
+                (if (consp head)
+                    (car head)
+                  (file-name-nondirectory (directory-file-name file-name)))))
+        (unless (or (equal name "")
+                    (assoc name buffers))
+          (push (cons (copy-sequence name) file-name) buffers))))
+    (when buffers
+      (nreverse buffers))))
+
 (defvar frog-jump-buffer-current-ignore-buffers nil
   "This is a placeholder variable for the currently active ignore buffer filters.")
 
@@ -137,14 +164,11 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
       frog-jump-buffer-current-ignore-buffers))
    buffers))
 
-(defun frog-jump-buffer-list ()
-  "Return the buffer list to apply the filters to."
-  (buffer-list))
-
 (defun frog-jump-buffer-buffer-names ()
-  "Filter and limit the number of buffers to show."
-  (-take frog-jump-buffer-max-buffers
-         (frog-jump-buffer-match (mapcar #'buffer-name (frog-jump-buffer-list)))))
+  "Filter the buffers to show."
+  (if frog-jump-buffer-include-virtual-buffers
+      (frog-jump-buffer-match (mapcar #'car (frog-jump-buffer-recentf-buffers)))
+    (frog-jump-buffer-match (mapcar #'buffer-name (buffer-list)))))
 
 (defvar frog-jump-buffer-target-other-window nil
   "This is a placeholder variable for determining which window to open the chosen buffer in.")
@@ -160,13 +184,20 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
   (let ((target-window-option (frog-jump-buffer-target-window-action)))
     (append frog-jump-buffer-filter-actions target-window-option)))
 
+(defun frog-jump-buffer-find-or-create-buffer (res)
+  "Switch to buffer, or if closed, find and create it first."
+  (let ((buffer (if frog-jump-buffer-include-virtual-buffers
+                    (find-file (assoc-default res (frog-jump-buffer-recentf-buffers)))
+                res)))
+    (if frog-jump-buffer-target-other-window
+        (switch-to-buffer-other-window buffer)
+      (switch-to-buffer buffer))))
+
 (defun frog-jump-buffer-handle-result (res)
   "Handle the result (RES) of `frog-menu-read' for `frog-jump-buffer'."
   (cond
    ((stringp res)
-    (if frog-jump-buffer-target-other-window
-        (switch-to-buffer-other-window res)
-      (switch-to-buffer res)))
+    (frog-jump-buffer-find-or-create-buffer res))
    ((eq res 'frog-jump-buffer-other-window)
     (let ((frog-jump-buffer-target-other-window t))
       (frog-jump-buffer)))
@@ -200,8 +231,10 @@ If FILTER-FUNCTION is present, filter the `buffer-list' with it."
          (frog-menu-grid-column-function (lambda () 1))
          (frog-menu-posframe-parameters frog-jump-buffer-posframe-parameters)
          (frog-menu-display-option-alist `((avy-posframe . ,frog-jump-buffer-posframe-handler)))
+         (frog-jump-buffer-include-virtual-buffers
+          (eq frog-jump-buffer-current-filter-function 'frog-jump-buffer-filter-recentf))
          (frog-jump-buffer-current-ignore-buffers (frog-jump-buffer-current-ignore-buffers))
-         (buffer-names (frog-jump-buffer-buffer-names))
+         (buffer-names (-take frog-jump-buffer-max-buffers (frog-jump-buffer-buffer-names)))
          (actions (frog-jump-buffer-actions))
          (prompt (frog-jump-buffer-prompt))
          (res (frog-menu-read prompt buffer-names actions)))

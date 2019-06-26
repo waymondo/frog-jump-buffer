@@ -34,25 +34,14 @@ buffer.
 Use `0` to toggle between opening in the same window or
 `(other-window)`.
 
-The numbers `1` through `4` will cycle through the default buffer filters:
+The numbers `1` through `5` will cycle through the default buffer filters:
 
 - `1`: show all buffers in the `(buffer-list)`
 - `2`: filter buffers to the same mode as `current-buffer`
 - `3`: filter buffers to only buffers represented by files
-- `4`: filter buffers to the same project as `current-buffer` (requires
+- `4`: show buffers from `recentf`, which can include closed buffers
+- `5`: filter buffers to the same project as `current-buffer` (requires
   [`projectiile`](https://github.com/bbatsov/projectile) to be installed)
-
----
-
-If you would like to call a function that uses a specific filter
-function by default, you can do so by defining a function like this:
-
-``` emacs-lisp
-(defun frog-jump-buffer-same-project ()
-  (interactive)
-  (let ((frog-jump-buffer-current-filter-function #'frog-jump-buffer-filter-same-project))
-    (frog-jump-buffer)))
-```
 
 ### Variables
 
@@ -72,8 +61,9 @@ This is the maximum number of buffers to show in the `frog-menu`.  The
 default is 12.
 
 #### `frog-jump-buffer-default-filter`
-This is the default filter to use when invoking
-`frog-jump-buffer`. Shows all buffers by default.
+This is the default filter to use when invoking `frog-jump-buffer`. Shows all buffers by default. If
+you would like to see closed buffers by default, you might want to set this to
+`frog-jump-buffer-filter-recentf`.
 
 #### `frog-jump-buffer-include-current-buffer`
 Set to `nil` to remove the current buffer from always being the first option.
@@ -87,9 +77,15 @@ point of the posframe.
 
 #### `frog-jump-buffer-filter-actions`
 These are the built-in buffer filter actions available during
-`frog-jump-buffer`.  Each action is a list of the form `(KEY
-DESCRIPTION FILTER-FUNCTION)`. You can add additional buffer filters
-like so:
+`frog-jump-buffer`.  
+
+### Custom Filter Actions
+
+You can add your own custom filter actions. Each action is a list of the form `(KEY DESCRIPTION
+FILTER-FUNCTION)`. Each filter function receives a buffer as an argument and should return a non-nil
+value if that buffer should be considered display-worthy in `frog-menu-buffer`.
+
+Example usage:
 
 ``` emacs-lisp
 (defun frog-jump-buffer-filter-special-buffers (buffer)
@@ -98,16 +94,17 @@ like so:
 
 (add-to-list
  'frog-jump-buffer-filter-actions
- '("5" "[special]" frog-jump-buffer-filter-special-buffers) t)
+ '("6" "[special]" frog-jump-buffer-filter-special-buffers) t)
 ```
-Each filter function receives a buffer as an argument and should
-return a non-nil value if that buffer should be displayed in `frog-menu-buffer`.
 
-The built-in filter functions, bound to `1`, `2`, `3`, `4` are:
+If you would like to call a function that uses a specific filter
+function by default, you can do so by defining a function like this:
 
-*  `frog-jump-buffer-filter-all`
-*  `frog-jump-buffer-filter-same-project`
-*  `frog-jump-buffer-filter-same-mode`
-*  `frog-jump-buffer-filter-file-buffers`
+``` emacs-lisp
+(defun frog-jump-buffer-same-project ()
+  (interactive)
+  (let ((frog-jump-buffer-current-filter-function #'frog-jump-buffer-filter-same-project))
+    (frog-jump-buffer)))
+```
 
 See `frog-menu-buffer.el` for more details.
