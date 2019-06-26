@@ -44,7 +44,6 @@
 (require 'avy)
 (require 'dash)
 (require 'frog-menu)
-(require 'projectile nil t)
 
 (defgroup frog-jump-buffer nil
   "Fast buffer switching interface."
@@ -84,7 +83,7 @@ Shows all buffers by default."
 Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
   :type 'list)
 
-(when (boundp 'projectile)
+(when (require 'projectile nil t)
   (add-to-list
    'frog-jump-buffer-filter-actions
    '("4" "[project]" frog-jump-buffer-filter-same-project) t))
