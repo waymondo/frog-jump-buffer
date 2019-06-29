@@ -58,7 +58,14 @@ function by default, you can do so by defining a function like this:
 
 #### `frog-jump-buffer-ignore-buffers`
 This is a list of regexps of buffer names to ignore or buffer-matching
-filter functions to use.
+filter functions to use. If you want to cut down on the noise of unimportant buffers, you will
+want to configure this. Here’s an example:
+
+``` emacs-lisp
+(dolist (regexp '("TAGS" "^\\*Compile-log" "-debug\\*$" "^\\:" "errors\\*$" "^\\*Backtrace" "-ls\\*$"
+                  "stderr\\*$" "^\\*Flymake" "^\\*vc" "^\\*Warnings" "^\\*eldoc" "\\^*Shell Command"))
+    (push regexp frog-jump-buffer-ignore-buffers))
+```
 
 #### `frog-jump-buffer-max-buffers`
 This is the maximum number of buffers to show in the `frog-menu`.  The
