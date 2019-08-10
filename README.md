@@ -110,7 +110,7 @@ Example usage:
     (-any? #'derived-mode-p '(comint-mode magit-mode inf-ruby-mode rg-mode compilation-mode))))
 
 (setq frog-jump-buffer-filter-actions
- '("7" "[special]" frog-jump-buffer-filter-special-buffers))
+ '(("7" "[special]" frog-jump-buffer-filter-special-buffers)))
 ```
 
 If you would like to call a function that uses a specific filter
