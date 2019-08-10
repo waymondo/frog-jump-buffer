@@ -84,9 +84,17 @@ Explicit frame parameters to be used by the posframe `frog-jump-buffer` creates.
 The posframe handler that `frog-jump-buffer` should use. Defaults to `(point)` being the bottom left
 point of the posframe.
 
+#### `frog-jump-buffer-default-filters-capital-letters`
+
+Set to a non-nil value to use capital letters instead of numbers for the default filter actions.
+
+#### `frog-jump-buffer-use-default-filter-actions`
+
+Set to `nil` to only use the filter actions defined in `frog-jump-buffer-filter-actions`.
+
 #### `frog-jump-buffer-filter-actions`
 
-These are the built-in buffer filter actions available during
+This is an empty list available for adding user defined buffer filter actions to be available during
 `frog-jump-buffer`.
 
 ### Custom Filter Actions
@@ -101,9 +109,8 @@ Example usage:
   (with-current-buffer buffer
     (-any? #'derived-mode-p '(comint-mode magit-mode inf-ruby-mode rg-mode compilation-mode))))
 
-(add-to-list
- 'frog-jump-buffer-filter-actions
- '("7" "[special]" frog-jump-buffer-filter-special-buffers) t)
+(setq frog-jump-buffer-filter-actions
+ '("7" "[special]" frog-jump-buffer-filter-special-buffers))
 ```
 
 If you would like to call a function that uses a specific filter

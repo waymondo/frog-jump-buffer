@@ -4,7 +4,7 @@
 
 ;; Author: Justin Talbott
 ;; URL: https://github.com/waymondo/frog-jump-buffer
-;; Version: 0.1.3
+;; Version: 0.1.4
 ;; Package-Requires: ((emacs "24") (avy "0.4.0") (dash "2.4.0") (frog-menu "0.2.8"))
 ;; License: GNU General Public License version 3, or (at your option) any later version
 ;; Keywords: convenience, tools
@@ -75,16 +75,40 @@ Shows all buffers by default."
   "This is the posframe handler that `frog-jump-buffer' should use."
   :type 'function)
 
-(defcustom frog-jump-buffer-filter-actions
-  '(("1" "[all]" frog-jump-buffer-filter-all)
-    ("2" "[mode]" frog-jump-buffer-filter-same-mode)
-    ("3" "[files]" frog-jump-buffer-filter-file-buffers)
-    ("4" "[recentf]" frog-jump-buffer-filter-recentf)
-    ("5" "[project]" frog-jump-buffer-filter-same-project)
-    ("6" "[similar]" frog-jump-buffer-filter-similar-name))
-  "The built-in buffer filter actions available during `frog-jump-buffer'.
+(defcustom frog-jump-buffer-default-filters-capital-letters t
+  "If non-nil, use capital letters instead of numbers for the default filters."
+  :type 'boolean)
+
+(defcustom frog-jump-buffer-use-default-filter-actions t
+  "Set to nil to only use the user-defined filter actions value of `frog-jump-buffer-filter-actions'."
+  :type 'boolean)
+
+(defcustom frog-jump-buffer-filter-actions '()
+  "User defined buffer filter actions available during `frog-jump-buffer'.
 Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
   :type 'list)
+
+(defun frog-jump-buffer-default-filter-actions ()
+  "The built-in buffer filter actions available during `frog-jump-buffer'.
+Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
+  `((,(if frog-jump-buffer-default-filters-capital-letters "A" "1")
+     "[all]" frog-jump-buffer-filter-all)
+    (,(if frog-jump-buffer-default-filters-capital-letters "M" "2")
+     "[mode]" frog-jump-buffer-filter-same-mode)
+    (,(if frog-jump-buffer-default-filters-capital-letters "F" "3")
+     "[files]" frog-jump-buffer-filter-file-buffers)
+    (,(if frog-jump-buffer-default-filters-capital-letters "R" "4")
+     "[recentf]" frog-jump-buffer-filter-recentf)
+    (,(if frog-jump-buffer-default-filters-capital-letters "P" "5")
+     "[project]" frog-jump-buffer-filter-same-project)
+    (,(if frog-jump-buffer-default-filters-capital-letters "S" "6")
+     "[similar]" frog-jump-buffer-filter-similar-name)))
+
+(defun frog-jump-buffer-filter-actions ()
+  "Construct the full list of filter actions to use during `frog-jump-buffer'."
+  (if frog-jump-buffer-use-default-filter-actions
+      (append (frog-jump-buffer-default-filter-actions) frog-jump-buffer-filter-actions)
+    frog-jump-buffer-filter-actions))
 
 (defvar frog-jump-buffer-current-filter-function frog-jump-buffer-default-filter
   "This is a placeholder variable for determining which function to filter buffers by.")
@@ -96,7 +120,7 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
                    (lambda (list)
                      (equal (symbol-name (car (last list)))
                             (symbol-name frog-jump-buffer-current-filter-function)))
-                   frog-jump-buffer-filter-actions)))
+                   (frog-jump-buffer-filter-actions))))
     (error "[all]")))
 
 (defun frog-jump-buffer-filter-same-project (buffer)
@@ -195,7 +219,7 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
 (defun frog-jump-buffer-actions ()
   "Determine the list of actions to show in `frog-jump-buffer'’s `frog-menu'."
   (let ((target-window-option (frog-jump-buffer-target-window-action)))
-    (append frog-jump-buffer-filter-actions target-window-option)))
+    (append (frog-jump-buffer-filter-actions) target-window-option)))
 
 (defun frog-jump-buffer-find-or-create-buffer (res)
   "Switch to buffer, or if closed, find and create it first."
