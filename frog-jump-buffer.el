@@ -4,7 +4,7 @@
 
 ;; Author: Justin Talbott
 ;; URL: https://github.com/waymondo/frog-jump-buffer
-;; Version: 0.1.2
+;; Version: 0.1.3
 ;; Package-Requires: ((emacs "24") (avy "0.4.0") (dash "2.4.0") (frog-menu "0.2.8"))
 ;; License: GNU General Public License version 3, or (at your option) any later version
 ;; Keywords: convenience, tools
@@ -37,7 +37,7 @@
 ;; Use `0' to toggle between opening in the same window or
 ;; `(other-window)'.
 
-;; The numbers 1 through 5 will cycle through the default buffer filters.
+;; The numbers 1 through 6 will cycle through the default buffer filters.
 
 ;;; Code:
 
@@ -79,15 +79,12 @@ Shows all buffers by default."
   '(("1" "[all]" frog-jump-buffer-filter-all)
     ("2" "[mode]" frog-jump-buffer-filter-same-mode)
     ("3" "[files]" frog-jump-buffer-filter-file-buffers)
-    ("4" "[recentf]" frog-jump-buffer-filter-recentf))
+    ("4" "[recentf]" frog-jump-buffer-filter-recentf)
+    ("5" "[project]" frog-jump-buffer-filter-same-project)
+    ("6" "[similar]" frog-jump-buffer-filter-similar-name))
   "The built-in buffer filter actions available during `frog-jump-buffer'.
 Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
   :type 'list)
-
-(when (require 'projectile nil t)
-  (add-to-list
-   'frog-jump-buffer-filter-actions
-   '("5" "[project]" frog-jump-buffer-filter-same-project) t))
 
 (defvar frog-jump-buffer-current-filter-function frog-jump-buffer-default-filter
   "This is a placeholder variable for determining which function to filter buffers by.")
@@ -104,16 +101,32 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
 
 (defun frog-jump-buffer-filter-same-project (buffer)
   "Check if a BUFFER is the same project."
-  (let ((project-root (projectile-project-root)))
-    (when project-root
-      (with-current-buffer buffer
-        (projectile-project-buffer-p buffer project-root)))))
+  (if (require 'projectile nil t)
+      (let ((project-root (projectile-project-root)))
+        (when project-root
+          (with-current-buffer buffer
+            (projectile-project-buffer-p buffer project-root))))
+    (error "Install projectile to filter buffers by projects")))
 
 (defun frog-jump-buffer-filter-same-mode (buffer)
   "Check if a BUFFER is the same as the current major mode."
   (let ((current-mode major-mode))
     (with-current-buffer buffer
       (eq major-mode current-mode))))
+
+(defun frog-jump-buffer-name-substrings (buffer-name)
+  "Split a buffer name into substrings minus the extention."
+  (let ((buffer-name-without-extention
+         (car (split-string buffer-name (rx (and "." (one-or-more alphanumeric) line-end))))))
+    (split-string buffer-name-without-extention "[[:blank:]-_.]+")))
+
+(defun frog-jump-buffer-filter-similar-name (buffer)
+  "Check if the BUFFER is similarly named as the current buffer."
+  (let ((current-buffer-name-substrings
+         (frog-jump-buffer-name-substrings (buffer-name (current-buffer)))))
+    (with-current-buffer buffer
+      (> (length (-intersection (frog-jump-buffer-name-substrings (buffer-name buffer))
+                                current-buffer-name-substrings)) 0))))
 
 (defun frog-jump-buffer-filter-file-buffers (buffer)
   "Check if a BUFFER is backed by a real file."
@@ -188,7 +201,7 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
   "Switch to buffer, or if closed, find and create it first."
   (let ((buffer (if frog-jump-buffer-include-virtual-buffers
                     (find-file (assoc-default res (frog-jump-buffer-recentf-buffers)))
-                res)))
+                  res)))
     (if frog-jump-buffer-target-other-window
         (switch-to-buffer-other-window buffer)
       (switch-to-buffer buffer))))

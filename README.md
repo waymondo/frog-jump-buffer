@@ -16,13 +16,14 @@ strokes.
 
 You can install it from [MELPA](http://melpa.org/) with `M-x package-install` or here’s a basic `use-package` declaration:
 
-``` emacs-lisp
+```emacs-lisp
 (use-package frog-jump-buffer :ensure t)
 ```
 
 ### Usage
 
 #### `(frog-jump-buffer)`
+
 This is the main entry-point. Bind it to your preferred key-binding.
 
 It opens the `frog-menu` buffer selector. The buffers appear in order
@@ -34,7 +35,7 @@ buffer.
 Use `0` to toggle between opening in the same window or
 `(other-window)`.
 
-The numbers `1` through `5` will cycle through the default buffer filters:
+The numbers `1` through `6` will cycle through the default buffer filters:
 
 - `1`: show all buffers in the `(buffer-list)`
 - `2`: filter buffers to the same mode as `current-buffer`
@@ -42,65 +43,73 @@ The numbers `1` through `5` will cycle through the default buffer filters:
 - `4`: show buffers from `recentf`, which can include closed buffers
 - `5`: filter buffers to the same project as `current-buffer` (requires
   [`projectiile`](https://github.com/bbatsov/projectile) to be installed)
+- `6`: filter buffers to similarly named buffers. (i.e. if `(current-buffer)` is `frog.html`, show
+  `frog.css`, `*magit: frog*`, etc.)
 
 ### Variables
 
 #### `frog-jump-buffer-ignore-buffers`
+
 This is a list of regexps of buffer names to ignore or buffer-matching
 filter functions to use. If you want to cut down on the noise of unimportant buffers, you will
 want to configure this. Here’s an example:
 
-``` emacs-lisp
+```emacs-lisp
 (dolist (regexp '("TAGS" "^\\*Compile-log" "-debug\\*$" "^\\:" "errors\\*$" "^\\*Backtrace" "-ls\\*$"
                   "stderr\\*$" "^\\*Flymake" "^\\*vc" "^\\*Warnings" "^\\*eldoc" "\\^*Shell Command"))
     (push regexp frog-jump-buffer-ignore-buffers))
 ```
 
 #### `frog-jump-buffer-max-buffers`
-This is the maximum number of buffers to show in the `frog-menu`.  The
+
+This is the maximum number of buffers to show in the `frog-menu`. The
 default is 12.
 
 #### `frog-jump-buffer-default-filter`
+
 This is the default filter to use when invoking `frog-jump-buffer`. Shows all buffers by default. If
 you would like to see closed buffers by default, you might want to set this to
 `frog-jump-buffer-filter-recentf`.
 
 #### `frog-jump-buffer-include-current-buffer`
+
 Set to `nil` to remove the current buffer from always being the first option.
 
 #### `frog-jump-buffer-posframe-parameters`
+
 Explicit frame parameters to be used by the posframe `frog-jump-buffer` creates.
 
 #### `frog-jump-buffer-posframe-handler`
+
 The posframe handler that `frog-jump-buffer` should use. Defaults to `(point)` being the bottom left
 point of the posframe.
 
 #### `frog-jump-buffer-filter-actions`
+
 These are the built-in buffer filter actions available during
-`frog-jump-buffer`.  
+`frog-jump-buffer`.
 
 ### Custom Filter Actions
 
-You can add your own custom filter actions. Each action is a list of the form `(KEY DESCRIPTION
-FILTER-FUNCTION)`. Each filter function receives a buffer as an argument and should return a non-nil
+You can add your own custom filter actions. Each action is a list of the form `(KEY DESCRIPTION FILTER-FUNCTION)`. Each filter function receives a buffer as an argument and should return a non-nil
 value if that buffer should be considered display-worthy in `frog-menu-buffer`.
 
 Example usage:
 
-``` emacs-lisp
+```emacs-lisp
 (defun frog-jump-buffer-filter-special-buffers (buffer)
   (with-current-buffer buffer
     (-any? #'derived-mode-p '(comint-mode magit-mode inf-ruby-mode rg-mode compilation-mode))))
 
 (add-to-list
  'frog-jump-buffer-filter-actions
- '("6" "[special]" frog-jump-buffer-filter-special-buffers) t)
+ '("7" "[special]" frog-jump-buffer-filter-special-buffers) t)
 ```
 
 If you would like to call a function that uses a specific filter
 function by default, you can do so by defining a function like this:
 
-``` emacs-lisp
+```emacs-lisp
 (defun frog-jump-buffer-same-project ()
   (interactive)
   (let ((frog-jump-buffer-current-filter-function #'frog-jump-buffer-filter-same-project))
