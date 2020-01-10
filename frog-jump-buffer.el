@@ -50,6 +50,10 @@
   :group 'convenience
   :prefix "frog-jump-buffer-")
 
+(defcustom frog-jump-buffer-sort '(lambda(one two) t)
+  "User defined sorting function" 
+  :type 'function)
+
 (defcustom frog-jump-buffer-ignore-buffers '("\\` ")
   "This is a list of regexps of buffer names to ignore or buffer-matching filter functions to use."
   :type '(repeat (choice regexp function)))
@@ -274,7 +278,7 @@ If FILTER-FUNCTION is present, filter the `buffer-list' with it."
          (buffer-names (-take frog-jump-buffer-max-buffers (frog-jump-buffer-buffer-names)))
          (actions (frog-jump-buffer-actions))
          (prompt (frog-jump-buffer-prompt))
-         (res (frog-menu-read prompt buffer-names actions)))
+         (res (frog-menu-read prompt (cl-sort buffer-names frog-jump-buffer-sort) actions)))
     (unless res
       (error "Quit"))
     (frog-jump-buffer-handle-result res)))
