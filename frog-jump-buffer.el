@@ -50,7 +50,7 @@
   :group 'convenience
   :prefix "frog-jump-buffer-")
 
-(defcustom frog-jump-buffer-sort '(lambda(one two) t)
+(defcustom frog-jump-buffer-sort '(lambda(one two) nil)
   "User defined sorting function" 
   :type 'function)
 
