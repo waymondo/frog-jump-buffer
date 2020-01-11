@@ -62,7 +62,7 @@
   "This is the maximum number of buffers to show in the `frog-menu'."
   :type 'number)
 
-(defcustom frog-jump-buffer-default-filter 'frog-jump-buffer-filter-all
+(defcustom frog-jump-buffer-current-filter-function 'frog-jump-buffer-filter-all
   "This is the default filter to use when invoking `frog-jump-buffer'.
 Shows all buffers by default."
   :type 'symbol)
@@ -113,9 +113,6 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
   (if frog-jump-buffer-use-default-filter-actions
       (append (frog-jump-buffer-default-filter-actions) frog-jump-buffer-filter-actions)
     frog-jump-buffer-filter-actions))
-
-(defvar frog-jump-buffer-current-filter-function frog-jump-buffer-default-filter
-  "This is a placeholder variable for determining which function to filter buffers by.")
 
 (defun frog-jump-buffer-get-current-filter-name ()
   "Get the current filter’s name."
