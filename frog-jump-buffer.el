@@ -114,7 +114,7 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
       (append (frog-jump-buffer-default-filter-actions) frog-jump-buffer-filter-actions)
     frog-jump-buffer-filter-actions))
 
-(defvar frog-jump-buffer-current-filter-function frog-jump-buffer-default-filter
+(defvar frog-jump-buffer-current-filter-function nil
   "This is a placeholder variable for determining which function to filter buffers by.")
 
 (defun frog-jump-buffer-get-current-filter-name ()
@@ -271,6 +271,8 @@ If FILTER-FUNCTION is present, filter the `buffer-list' with it."
   (let* ((frog-menu-avy-padding t)
          (frog-menu-grid-column-function (lambda () 1))
          (frog-menu-posframe-parameters frog-jump-buffer-posframe-parameters)
+         (frog-jump-buffer-current-filter-function
+          (or frog-jump-buffer-current-filter-function frog-jump-buffer-default-filter))
          (frog-menu-display-option-alist `((avy-posframe . ,frog-jump-buffer-posframe-handler)))
          (frog-jump-buffer-include-virtual-buffers
           (eq frog-jump-buffer-current-filter-function 'frog-jump-buffer-filter-recentf))
