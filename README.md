@@ -40,7 +40,7 @@ The numbers `1` through `6` will cycle through the default buffer filters:
 - `1`: show all buffers in the `(buffer-list)`
 - `2`: filter buffers to the same mode as `current-buffer`
 - `3`: filter buffers to only buffers represented by files
-- `4`: show buffers from `recentf`, which can include closed buffers
+- `4`: show buffers from `recentf`, which can include killed buffers
 - `5`: filter buffers to the same project as `current-buffer` (requires
   [`projectiile`](https://github.com/bbatsov/projectile) to be installed)
 - `6`: filter buffers to similarly named buffers. (i.e. if `(current-buffer)` is `frog.html`, show
@@ -68,12 +68,13 @@ default is 12.
 #### `frog-jump-buffer-default-filter`
 
 This is the default filter to use when invoking `frog-jump-buffer`. Shows all buffers by default. If
-you would like to see closed buffers by default, you might want to set this to
+you would like to include recently killed buffers by default, you might want to set this to
 `frog-jump-buffer-filter-recentf`.
 
 #### `frog-jump-buffer-include-current-buffer`
 
-Set to `nil` to remove the current buffer from always being the first option.
+Set to `nil` to remove the current buffer from always being the first menu option. This is handy if
+you would prefer `ESC` to be your menu dismissal command.
 
 #### `frog-jump-buffer-posframe-parameters`
 
@@ -86,7 +87,8 @@ point of the posframe.
 
 #### `frog-jump-buffer-default-filters-capital-letters`
 
-Set to a non-nil value to use capital letters instead of numbers for the default filter actions.
+Set to a non-nil value to use capital letters instead of numbers for the default filter actions
+instead of numbers.
 
 #### `frog-jump-buffer-use-default-filter-actions`
 
