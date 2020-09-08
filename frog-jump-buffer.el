@@ -225,10 +225,14 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
   (let ((target-window-option (frog-jump-buffer-target-window-action)))
     (append (frog-jump-buffer-filter-actions) target-window-option)))
 
+(defun frog-jump-buffer-find-or-create-recentf-buffer (res)
+  "Visit the file in the `recentf' list."
+  (find-file-noselect (assoc-default res (frog-jump-buffer-recentf-buffers))))
+
 (defun frog-jump-buffer-find-or-create-buffer (res)
   "Switch to buffer, or if closed, find and create it first."
   (let ((buffer (if frog-jump-buffer-include-virtual-buffers
-                    (find-file (assoc-default res (frog-jump-buffer-recentf-buffers)))
+                    (frog-jump-buffer-find-or-create-recentf-buffer res)
                   res)))
     (if frog-jump-buffer-target-other-window
         (switch-to-buffer-other-window buffer)
