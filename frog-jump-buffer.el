@@ -51,7 +51,7 @@
   :prefix "frog-jump-buffer-")
 
 (defcustom frog-jump-buffer-sort '(lambda(one two) nil)
-  "User defined sorting function" 
+  "User defined sorting function"
   :type 'function)
 
 (defcustom frog-jump-buffer-ignore-buffers '("\\` ")
@@ -279,6 +279,8 @@ If FILTER-FUNCTION is present, filter the `buffer-list' with it."
          (frog-jump-buffer-current-ignore-buffers (frog-jump-buffer-current-ignore-buffers))
          (buffer-names (-take frog-jump-buffer-max-buffers (frog-jump-buffer-buffer-names)))
          (actions (frog-jump-buffer-actions))
+         (filter-keys (-map #'string-to-char (-map #'car actions)))
+         (frog-menu-avy-keys (-difference frog-menu-avy-keys filter-keys))
          (prompt (frog-jump-buffer-prompt))
          (res (frog-menu-read prompt (cl-sort buffer-names frog-jump-buffer-sort) actions)))
     (unless res
