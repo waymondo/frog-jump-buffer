@@ -267,6 +267,18 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
            (unless frog-jump-buffer-include-current-buffer
              (list (buffer-name (current-buffer)))))))
 
+(defun frog-jump-buffer-iconify-buffer-names (buffer-names)
+  "Add an icon before each buffer name when `all-the-icons-ivy' is available."
+  (if (featurep 'all-the-icons-ivy)
+      (mapcar '(lambda (buffer-name)
+                 (cons
+                  (if (buffer-file-name (get-buffer buffer-name))
+                      (all-the-icons-ivy-file-transformer buffer-name)
+                    (all-the-icons-ivy-buffer-transformer buffer-name))
+                  buffer-name))
+              buffer-names)
+    buffer-names))
+
 ;;;###autoload
 (defun frog-jump-buffer ()
   "Present a `frog-menu' for jumping to an open buffer.
@@ -286,7 +298,9 @@ If FILTER-FUNCTION is present, filter the `buffer-list' with it."
          (filter-keys (-map #'string-to-char (-map #'car actions)))
          (frog-menu-avy-keys (-difference frog-menu-avy-keys filter-keys))
          (prompt (frog-jump-buffer-prompt))
-         (res (frog-menu-read prompt (cl-sort buffer-names frog-jump-buffer-sort) actions)))
+         (res (frog-menu-read prompt (frog-jump-buffer-iconify-buffer-names
+                                      (cl-sort buffer-names frog-jump-buffer-sort))
+                              actions)))
     (unless res
       (error "Quit"))
     (frog-jump-buffer-handle-result res)))
