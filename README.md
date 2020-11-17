@@ -126,3 +126,11 @@ function by default, you can do so by defining a function like this:
 ```
 
 See `frog-menu-buffer.el` for more details.
+
+### all-the-icons-ivy integration
+
+When all-the-icons-ivy is available, an icon (which represents the
+file type) will be inserted in front of the buffer name, such that it
+is easier to spot the desired buffer to jump to. Here is a screenshot:
+
+![withIcon](withIcon.png)
