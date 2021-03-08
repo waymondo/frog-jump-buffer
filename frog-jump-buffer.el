@@ -301,9 +301,9 @@ If FILTER-FUNCTION is present, filter the `buffer-list' with it."
          (res (frog-menu-read prompt (frog-jump-buffer-iconify-buffer-names
                                       (cl-sort buffer-names frog-jump-buffer-sort))
                               actions)))
-    (unless res
-      (error "Quit"))
-    (frog-jump-buffer-handle-result res)))
+    (if res
+        (frog-jump-buffer-handle-result res)
+      (message "No action or candidate selected"))))
 
 ;;;###autoload
 (defun frog-jump-buffer-other-window ()
