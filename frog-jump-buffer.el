@@ -294,7 +294,9 @@ If FILTER-FUNCTION is present, filter the `buffer-list' with it."
          (frog-menu-posframe-parameters frog-jump-buffer-posframe-parameters)
          (frog-jump-buffer-current-filter-function
           (or frog-jump-buffer-current-filter-function frog-jump-buffer-default-filter))
-         (frog-menu-display-option-alist `((avy-posframe . ,frog-jump-buffer-posframe-handler)))
+         (frog-jump-buffer-display-option-alist (copy-alist frog-menu-display-option-alist))
+         (_ (rplacd (assq 'avy-posframe frog-jump-buffer-display-option-alist) frog-jump-buffer-posframe-handler))
+         (frog-menu-display-option-alist frog-jump-buffer-display-option-alist)
          (frog-jump-buffer-include-virtual-buffers
           (eq frog-jump-buffer-current-filter-function 'frog-jump-buffer-filter-recentf))
          (frog-jump-buffer-current-ignore-buffers (frog-jump-buffer-current-ignore-buffers))
