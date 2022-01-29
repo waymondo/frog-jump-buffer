@@ -18,3 +18,8 @@
 
 - Add `frog-jump-buffer-default-filters-capital-letters` as an option instead of numbers.
 - Allow a simpler method of adding custom filter actions and opting out of the default ones.
+
+\*\*\* 0.1.5
+
+- Add support for Emacs built-in `project.el` as an alternative to `projectile`
+

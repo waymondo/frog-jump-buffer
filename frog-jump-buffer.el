@@ -4,7 +4,7 @@
 
 ;; Author: Justin Talbott
 ;; URL: https://github.com/waymondo/frog-jump-buffer
-;; Version: 0.1.4
+;; Version: 0.1.5
 ;; Package-Requires: ((emacs "24") (avy "0.4.0") (dash "2.4.0") (frog-menu "0.2.8"))
 ;; License: GNU General Public License version 3, or (at your option) any later version
 ;; Keywords: convenience, tools
@@ -97,6 +97,12 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
 Warning: experimental. Requires installing `all-the-icons-ivy'."
   :type 'boolean)
 
+(defcustom frog-jump-buffer-project-package (if (require 'projectile nil t) 'projectile 'project)
+  "Set the project package to use. Defaults to the popular `projectile' if installed.
+You can set it to `project' if you have Emacs 28+ installed, or
+this will be the default if `projectile' not available."
+  :type 'symbol)
+
 (defun frog-jump-buffer-default-filter-actions ()
   "The built-in buffer filter actions available during `frog-jump-buffer'.
 Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
@@ -134,12 +140,14 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
 
 (defun frog-jump-buffer-filter-same-project (buffer)
   "Check if a BUFFER is the same project."
-  (if (require 'projectile nil t)
-      (let ((project-root (projectile-project-root)))
-        (when project-root
-          (with-current-buffer buffer
-            (projectile-project-buffer-p buffer project-root))))
-    (error "Install projectile to filter buffers by projects")))
+  (cond
+   ((eq frog-jump-buffer-project-package 'projectile)
+    (let ((project-root (projectile-project-root)))
+      (when project-root
+        (with-current-buffer buffer
+          (projectile-project-buffer-p buffer project-root)))))
+   ((eq frog-jump-buffer-project-package 'project)
+    (member buffer (project-buffers (project-current))))))
 
 (defun frog-jump-buffer-filter-same-mode (buffer)
   "Check if a BUFFER is the same as the current major mode."

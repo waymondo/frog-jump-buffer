@@ -99,6 +99,12 @@ Set to `nil` to only use the filter actions defined in `frog-jump-buffer-filter-
 This is an empty list available for adding user defined buffer filter actions to be available during
 `frog-jump-buffer`.
 
+### `frog-jump-buffer-project-package`
+
+Set the project package to use. Defaults to the popular `projectile` if it is installed.  You can
+set it to `project` if you have Emacs 28+ installed, or this will be the default if `projectile` is
+not available.
+
 ### Custom Filter Actions
 
 You can add your own custom filter actions. Each action is a list of the form `(KEY DESCRIPTION FILTER-FUNCTION)`. Each filter function receives a buffer as an argument and should return a non-nil
