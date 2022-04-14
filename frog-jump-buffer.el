@@ -147,7 +147,9 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
         (with-current-buffer buffer
           (projectile-project-buffer-p buffer project-root)))))
    ((eq frog-jump-buffer-project-package 'project)
-    (member buffer (project-buffers (project-current))))))
+    (let ((project-root (project-current)))
+      (when project-root
+        (member buffer (project-buffers (project-current))))))))
 
 (defun frog-jump-buffer-filter-same-mode (buffer)
   "Check if a BUFFER is the same as the current major mode."
