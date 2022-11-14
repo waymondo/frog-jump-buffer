@@ -280,7 +280,7 @@ Each action is a list of the form: (KEY DESCRIPTION FILTER-FUNCTION)."
    (append frog-jump-buffer-ignore-buffers
            (list frog-jump-buffer-current-filter-function)
            (unless frog-jump-buffer-include-current-buffer
-             (list (buffer-name (current-buffer)))))))
+             (list (concat "^" (buffer-name (current-buffer)) "$"))))))
 
 (defun frog-jump-buffer-maybe-iconify-buffer-names (buffer-names)
   "Add an icon before each buffer name when `all-the-icons-ivy' is available."
