@@ -45,6 +45,12 @@
 (require 'dash)
 (require 'frog-menu)
 
+(declare-function all-the-icons-ivy-buffer-transformer "all-the-icons-ivy")
+(declare-function all-the-icons-ivy-file-transformer "all-the-icons-ivy")
+(declare-function project-buffers "project")
+(declare-function projectile-project-buffer-p "projectile")
+(declare-function projectile-project-root "projectile")
+
 (defgroup frog-jump-buffer nil
   "Fast buffer switching interface."
   :group 'convenience
